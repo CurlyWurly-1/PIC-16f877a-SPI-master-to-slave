@@ -16,44 +16,41 @@
 #pragma config WRT = OFF        // Flash Program Memory Write Enable bits (Write protection off; all program memory may be written to by EECON control)
 #pragma config CP = OFF         // Flash Program Memory Code Protection bit (Code protection off)
 
+
 // Set Clock Freq. & Delays
 #ifndef _XTAL_FREQ
     #define _XTAL_FREQ 4000000
-//    #define __delay_us(x) _delay((unsigned long)((x)*(_XTAL_FREQ/20000000.0)))
-//    #define __delay_ms(x) _delay((unsigned long)((x)*(_XTAL_FREQ/20000.0)))
+//    #define __delay_us(x) _delay((unsigned long)((x)*(_XTAL_FREQ/4000000.0)))
+//    #define __delay_ms(x) _delay((unsigned long)((x)*(_XTAL_FREQ/4000.0)))
 #endif
-
-// SPI Ports
-#define SCK RC3
-#define SDI RC4
-#define SDO RC5
 
 void main(void);
 void pic_init(void);
 void spi_init(void);
+void pushbutton(void);
 void spi_reset(void);
 void timer_on(void);
 void timer_off(void);
 
+#define BTN01 RB0               // Push Button
+
+#define SCK RC3
+#define SDI RC4
+#define SDO RC5
+
+unsigned char testCounter = 0;
 
 /****************************************************************************
 * main()
 ****************************************************************************/
 void main(){
-    unsigned char dummy;
-
     pic_init();
     spi_init();
 
     while(1)
     {
-        while(BF==0)      // Wait for SSPBUF Reception complete
-        {
-            timer_on();
-        }
-        timer_off();
-        dummy = SSPBUF;                     // Get data byte
-        PORTD = ~dummy;
+        __delay_ms(100);    // this could be removed to make it quicker!!
+        pushbutton();
     }
 }
 
@@ -61,16 +58,15 @@ void main(){
 * pic_init()
 ****************************************************************************/
 void pic_init(){
-    ADCON1 = 7;
-//    nRBPU = 0;
-    PORTD = 0xff;
-    TRISD = 0;
+    ADCON1 = 7;             // Configure pins as digital
+    TRISB  = 0b00000001;    // push button on RB7
+    nRBPU  = 0;             // Set weak pullups in port B
 /* Timer Interupt Frequency
 * f = XTAL_FREQ / 4 * prescalar * Timer ! Resolution
 * f = XTAL_FREQ / 4 * 8 * 65536 = 2Hz   */
 // Timer 1 prescaler 1:8
-    T1CONbits.T1CKPS1 = 0;
-    T1CONbits.T1CKPS0 = 0;
+    T1CONbits.T1CKPS1 = 1;
+    T1CONbits.T1CKPS0 = 1;
 }
 
 /****************************************************************************
@@ -78,20 +74,37 @@ void pic_init(){
 ****************************************************************************/
 void spi_init(void) {
     INTCON = 0;         // Disable all interrupts
-    TRISC3 = 1;         // SCK=RC3 is the serial clock
+    TRISC3 = 0;         // SCK=RC3 is the serial clock
     TRISC4 = 1;         // SDI=RC4 is serial data input
-    PORTCbits.RC5 = 1;
     TRISC5 = 0;         // SDO=RC5 is serial data output
     SSPEN = 0;          // Allow Programming of serial port
     SMP = 0;            // Input data sampled at middle data output time
     CKP = 1;            // Idle state for clock is a HIGH level
     CKE = 1;            // Transmit occurs on idle to active clock state
-    SSPM3 = 0;
-    SSPM2 = 1;
-    SSPM1 = 0;
-    SSPM0 = 1;
+    SSPM3 = 0;          //
+    SSPM2 = 0;          //
+    SSPM1 = 0;          //
+    SSPM0 = 0;          // SPI Master mode, clock = FOSC/4
     SSPIF = 0;
     SSPEN = 1;          // End programming and Start serial port
+}
+
+/****************************************************************************
+* pushbutton()
+****************************************************************************/
+void pushbutton(){
+unsigned char dummy;
+    if(BTN01 == 0){
+        SSPBUF = testCounter++;
+        while(BF==0)
+        {
+            timer_on();
+        }
+        timer_off();
+        dummy = SSPBUF;             //reads SSPBUF
+//        if(testCounter ==  0xff)
+//            testCounter = 0;
+    }
 }
 
 /****************************************************************************
