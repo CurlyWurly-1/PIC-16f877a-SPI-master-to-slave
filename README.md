@@ -10,7 +10,8 @@ N.B. There is no attempt to rescue the data here - if it is deemed to be mangled
 Also, I think the packet speed of data constellations should be low here, so that there is time for any unfinished data in SSPBUF to be discarded/flushed if the interupt fires (after a 1/8 second timeout). One could use this code to quickly fire a sentence of several bytes across the SPI (with little pause between them), but to pause before sending the next sentence (e.g. 1/2 second).
 
 One interesting side effect of this code, is that the slave does not really require a power supply because the "clock" line idles "high". This means that the "slave" 16f877A receives its power from the "clock" line !!!
+
 I think this code is best utilised for ad hoc data downloading from a "master" to "slave". 
-Later on. I hope to publish code for data going the other way i.e. a "master" device signals to a "slave" device that it wants to read from data from it (data comes back from the "slave" after being "kicked").
+Later on. I hope to publish code for data going the other way i.e. a "master" device signals to a "slave" that it wants to read data from it (i.e. data comes back from the "slave" after being "kicked").
 
 Hope this code proves useful for you - Enjoy!
