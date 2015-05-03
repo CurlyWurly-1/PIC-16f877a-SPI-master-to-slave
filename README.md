@@ -6,8 +6,8 @@ If this housekeeping is not done, then in certain situations, the code can eithe
 - Lock while waiting for the "BF" to change 
 - Start receiving rubbish data (half of previous byte transmission mangled with current byte). This happens mostly when the devices are first powered on in differing sequences. 
 
-N.B. There is no attempt here to rescue the data here - if it is deemed to be mangled by the interupt firing, then the data is discarded because the SPI module is refreshed. (SSPEN = 0 and then SSPEN = 1).
-Als, I think it would be best if the packet speed of data constellations is low, so that there is time for any unfinished data in SSPBUF to be discarded/flushed if the interupt fires (after a 1/8 second timeout). 
+N.B. There is no attempt to rescue the data here - if it is deemed to be mangled by the interupt firing, then the data is discarded because the SPI module is refreshed. (SSPEN = 0 and then SSPEN = 1).
+Also, I think the packet speed of data constellations should be low here, so that there is time for any unfinished data in SSPBUF to be discarded/flushed if the interupt fires (after a 1/8 second timeout). One could use this code to quickly fire a sentence of several bytes across the SPI (with little pause between them), but to pause before sending the next sentence (e.g. 1/2 second).
 
 One interesting side effect of this code, is that the slave does not really require a power supply because the "clock" line idles "high". This means that the "slave" 16f877A receives its power from the "clock" line !!!
 I think this code is best utilised for ad hoc data downloading from a "master" to "slave". 
