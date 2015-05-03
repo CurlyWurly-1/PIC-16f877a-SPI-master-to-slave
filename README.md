@@ -6,10 +6,11 @@ If this housekeeping is not done, then in certain situations, the code can eithe
 - Lock while waiting for the "BF" to change 
 - Start receiving rubbish data (half of previous byte transmission mangled with current byte). This happens mostly when the devices are first powered on in differing sequences. 
 
-N.B. There is no attempt here to rescue the data, if it is mangled then it is ignored.
-Also , it I think it would be best if the packet speed of data constellations is low, so that there is time for any errors to be discarded/flushed out if the interupt fires (after a the 1/8 second timeout). 
-This code is best utilised for ad hoc data downloading of data from a "master" to "slave".
-One interesting side effect is that the slave does not require a power supply - it is powered by the "clock" line because it idles "high".
-Later on. I hope to publish other code - for a master to signal to a slave that it wants to read from it i.e. data comes back from the slave.
+N.B. There is no attempt here to rescue the data here - if it is deemed to be mangled by the interupt firing, then the data is discarded because the SPI module is refreshed. (SSPEN = 0 and then SSPEN = 1).
+Als, I think it would be best if the packet speed of data constellations is low, so that there is time for any unfinished data in SSPBUF to be discarded/flushed if the interupt fires (after a 1/8 second timeout). 
+
+One interesting side effect of this code, is that the slave does not really require a power supply because the "clock" line idles "high". This means that the "slave" 16f877A receives its power from the "clock" line !!!
+I think this code is best utilised for ad hoc data downloading from a "master" to "slave". 
+Later on. I hope to publish code for data going the other way i.e. a "master" device signals to a "slave" device that it wants to read from data from it (data comes back from the "slave" after being "kicked").
 
 Hope this code proves useful for you - Enjoy!
