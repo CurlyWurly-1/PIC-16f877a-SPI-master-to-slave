@@ -1,5 +1,6 @@
 # PIC-16f877a-SPI-master-to-slave
 There are many examples of this on the web, but most don't seem to work. 
+Pics of the breadboard used are in the "issues" (on the right)
 Here is some C code for the MPLAB X IDE using the XC8 compiler, which seems to be quite stable for me. 
 It enables two 16f877a devices to communicate with each other via SPI and what makes this code different to others, is the use of a watchdog timer to check if the "BF" flag has changed state in an acceptable period of time (Set as 1/8th of a second). 
 If this housekeeping is not done, then in certain situations, the code can either:
