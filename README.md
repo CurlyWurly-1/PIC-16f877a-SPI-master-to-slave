@@ -2,13 +2,15 @@
 
 
 There are many examples of this on the web, but most don't seem to work well. The attached examples of C code are used for "master" and "slave" PICF887A circuits, and data transmission works reliably for me.
-  N.B. The programs were generated using the MPLAB X IDE with the XC8 compiler. 
-  N.B. The pictures below show how the "Master" and "Slave" circuits are wired up on small breadboards.
-
-One interesting side effect of this code, is that the "Slave" does not require a separate power supply because it receives its power from the  "clock" line (mostly from when it idles "high"). 
 
 I think this code is best utilised for ad hoc data downloading from a "master" to "slave". 
 Later on. I hope to publish code for data going the other way i.e. a "master" device signals to a "slave" that it wants to read data from it (i.e. data comes back from the "slave" after being "kicked").
+
+One interesting side effect of this code, is that the "Slave" does not require a separate power supply because it receives its power from the  "clock" line (mostly from when it idles "high"). 
+
+The programs were generated using the MPLAB X IDE with the XC8 compiler. 
+
+The pictures below show how the "Master" and "Slave" circuits are wired up on small breadboards.
 
 The "Master" and "slave" programs are loaded into separte 16f877a devices and it enables data to be communicated between them using  SPI. What makes this code a bit different to others I've found, is the use of a watchdog timer to check if the "BF" flag has changed state in an acceptable period of time (Set as 1/8th of a second). The inclusion of a watchdog timer in the code acts as "unlocking housekeeping" i.e. after 1/8 second, it enables the system to recover itself from a lockup which coudl have happened becuase of a data transmission error.  
 
